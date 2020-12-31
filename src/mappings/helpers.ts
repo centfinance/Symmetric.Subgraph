@@ -15,8 +15,8 @@ import {
   Transaction,
   Balancer
 } from '../types/schema'
-import { BTokenBytes } from '../types/templates/Pool/BTokenBytes'
-import { BToken } from '../types/templates/Pool/BToken'
+import { CTokenBytes } from '../types/templates/Pool/CTokenBytes'
+import { CToken } from '../types/templates/Pool/CToken'
 import { CRPFactory } from '../types/Factory/CRPFactory'
 import { ConfigurableRightsPool } from '../types/Factory/ConfigurableRightsPool'
 
@@ -43,6 +43,21 @@ if (network == 'rinkeby') {
   DAI = '0x947b4082324af403047154f9f26f14538d775194'
   CRP_FACTORY = '0xA3F9145CB0B50D907930840BB2dcfF4146df8Ab4'
 }
+
+if (network == 'sokol') {
+  WETH = ''
+  USD = ''
+  DAI = ''
+  CRP_FACTORY = ''
+}
+
+if (network == 'xdai') {
+  WETH = '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1'
+  USD = '0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83'
+  DAI = '0x44fA8E6f47987339850636F88629646662444217'
+  CRP_FACTORY = ''
+}
+
 
 export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
   let bytes = Bytes.fromHexString(hexString).reverse() as Bytes
@@ -73,60 +88,112 @@ export function createPoolShareEntity(id: string, pool: string, user: string): v
 }
 
 export function createPoolTokenEntity(id: string, pool: string, address: string): void {
-  let token = BToken.bind(Address.fromString(address))
-  let tokenBytes = BTokenBytes.bind(Address.fromString(address))
+  let token = CToken.bind(Address.fromString(address))
+  let tokenBytes = CTokenBytes.bind(Address.fromString(address))
   let symbol = ''
   let name = ''
   let decimals = 18
+  let network = dataSource.network()
 
-  // COMMENT THE LINES BELOW OUT FOR LOCAL DEV ON KOVAN
+  // COMMENT THE LINES BELOW OUT FOR LOCAL DEV, KOVAN, SOKOL OR XDAI
 
-  let symbolCall = token.try_symbol()
-  let nameCall = token.try_name()
-  let decimalCall = token.try_decimals()
+  // let symbolCall = token.try_symbol()
+  // let nameCall = token.try_name()
+  // let decimalCall = token.try_decimals()
 
-  if (symbolCall.reverted) {
-    let symbolBytesCall = tokenBytes.try_symbol()
-    if (!symbolBytesCall.reverted) {
-      symbol = symbolBytesCall.value.toString()
-    }
-  } else {
-    symbol = symbolCall.value
-  }
+  // if (symbolCall.reverted) {
+  //   let symbolBytesCall = tokenBytes.try_symbol()
+  //   if (!symbolBytesCall.reverted) {
+  //     symbol = symbolBytesCall.value.toString()
+  //   }
+  // } else {
+  //   symbol = symbolCall.value
+  // }
 
-  if (nameCall.reverted) {
-    let nameBytesCall = tokenBytes.try_name()
-    if (!nameBytesCall.reverted) {
-      name = nameBytesCall.value.toString()
-    }
-  } else {
-    name = nameCall.value
-  }
+  // if (nameCall.reverted) {
+  //   let nameBytesCall = tokenBytes.try_name()
+  //   if (!nameBytesCall.reverted) {
+  //     name = nameBytesCall.value.toString()
+  //   }
+  // } else {
+  //   name = nameCall.value
+  // }
 
-  if (!decimalCall.reverted) {
-    decimals = decimalCall.value
-  }
+  // if (!decimalCall.reverted) {
+  //   decimals = decimalCall.value
+  // }
 
-  // COMMENT THE LINES ABOVE OUT FOR LOCAL DEV ON KOVAN
+  // COMMENT THE LINES ABOVE OUT FOR LOCAL DEV, KOVAN, SOKOL OR XDAI
 
   // !!! COMMENT THE LINES BELOW OUT FOR NON-LOCAL DEPLOYMENT
   // This code allows Symbols to be added when testing on local Kovan
-  /*
-  if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
-    symbol = 'WETH';
-  else if(address == '0x1528f3fcc26d13f7079325fb78d9442607781c8c')
-    symbol = 'DAI'
-  else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
-    symbol = 'MKR'
-  else if(address == '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5')
-    symbol = 'USDC'
-  else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
-    symbol = 'BAT'
-  else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
-    symbol = 'SNX'
-  else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
-    symbol = 'REP'
-  */
+  
+  if (network == 'kovan') {
+    if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
+      symbol = 'WETH';
+    else if(address == '0x1528f3fcc26d13f7079325fb78d9442607781c8c')
+      symbol = 'DAI'
+    else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
+      symbol = 'MKR'
+    else if(address == '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5')
+      symbol = 'USDC'
+    else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
+      symbol = 'BAT'
+    else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
+      symbol = 'SNX'
+    else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
+      symbol = 'REP'
+  }
+
+  if (network == 'rinkeby') {
+    if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
+      symbol = 'WETH';
+    else if(address == '0x1528f3fcc26d13f7079325fb78d9442607781c8c')
+      symbol = 'DAI'
+    else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
+      symbol = 'MKR'
+    else if(address == '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5')
+      symbol = 'USDC'
+    else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
+      symbol = 'BAT'
+    else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
+      symbol = 'SNX'
+    else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
+      symbol = 'REP'
+  }
+
+  if (network == 'sokol') {
+    if(address == '0xb7c91068ac96051573465e43603600c0684a7002')
+      symbol = 'WETH';
+      else if(address == '0x2e422c7fb2b5149a28d2c408f830504b873f14b1')
+        symbol = 'WPOA'
+      else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
+        symbol = 'MKR'
+      else if(address == '0x1b457C787792d17bea8d41885aDa00E764712cDD')
+        symbol = 'USDC'
+      else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
+        symbol = 'BAT'
+      else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
+        symbol = 'SNX'
+      else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
+        symbol = 'REP'
+  }
+
+  if (network == 'xdai') {
+    if(address == '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1')
+      symbol = 'WETH';
+    else if(address == '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e')
+      symbol = 'STAKE'
+    else if(address == '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d')
+      symbol = 'WXDAI'
+    else if(address == '0xE2e73A1c69ecF83F464EFCE6A5be353a37cA09b2')
+      symbol = 'LINK'
+    else if(address == '0x8e5bBbb09Ed1ebdE8674Cda39A0c169401db4252')
+      symbol = 'WBTC'
+    else if(address == '0x2977893F4C04bfbd6EFc68d0e46598d27810d3dB')
+      symbol = 'BID'
+  }
+
   // !!! COMMENT THE LINES ABOVE OUT FOR NON-LOCAL DEPLOYMENT
 
   let poolToken = new PoolToken(id)

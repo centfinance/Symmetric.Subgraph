@@ -1,4 +1,9 @@
-# Balancer Subgraph
+<div align="center">
+  <img alt="ReDoc logo" src="https://raw.githubusercontent.com/centfinance/Community/main/media-pack/logo.png" width="400px" />
+
+  ### Cent.Dex_subgraph
+ 
+</div>
 
 The graphql schema is still under heavy development and will likely have major breaking changes.
 
@@ -47,14 +52,14 @@ docker-compose kill && docker-compose rm -f && rm -rf data
 
 ### Contracts
 
-Deploy balancer contracts using truffle. Using the `yarn deploy` script in balancer-dapp also makes this easy to test out the subgraph using the frontend.
+Deploy CentSwap contracts using truffle. Using the `yarn deploy` script in centswap-dapp also makes this easy to test out the subgraph using the frontend.
 
 ### Subgraph
 
-Clone the balancer subgraph
+Clone the Cent subgraph
 
 ```
-git clone git@github.com:balancer-labs/balancer-subgraph.git
+git clone git@github.com:centfinance/Cent.ETH.Dex_subgraph.git
 ```
 
 Update factory address in subgraph.yaml to the one listed as part of the deploy
@@ -126,7 +131,7 @@ docker-compose kill && docker-compose rm -f && rm -rf data
 
 ## Queries
 
-GraphiQL interface can be accessed on a dev env at: http://127.0.0.1:8000/subgraphs/name/balancer-labs/balancer-subgraph
+GraphiQL interface can be accessed on a dev env at: http://127.0.0.1:8000/subgraphs/name/centfinance/cent-subgraph
 
 **List of pools**
 ```GraphQL
