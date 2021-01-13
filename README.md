@@ -1,9 +1,9 @@
 <div align="center">
   <img alt="ReDoc logo" src="https://raw.githubusercontent.com/centfinance/Community/main/media-pack/logo.png" width="400px" />
 
-  ### Cent.Dex_subgraph
- 
 </div>
+
+<h1 align=center><code>Cent Dex Subgraph</code></h1>
 
 The graphql schema is still under heavy development and will likely have major breaking changes.
 
