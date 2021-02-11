@@ -34,7 +34,7 @@ if (network == 'kovan') {
   WETH = '0xd0a1e359811322d97991e03f863a0c30c2cf029c'
   USD = '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5'
   DAI = '0x1528f3fcc26d13f7079325fb78d9442607781c8c'
-  CRP_FACTORY = '0x53265f0e014995363AE54DAd7059c018BaDbcD74'
+  CRP_FACTORY = '0x9D06ff728Cea5D46A5AD2E3DADA19698c7CC8422'
 }
 
 if (network == 'rinkeby') {
@@ -45,21 +45,21 @@ if (network == 'rinkeby') {
 }
 
 if (network == 'sokol') {
-  WETH = ''
-  USD = ''
-  DAI = ''
-  CRP_FACTORY = ''
+  WETH = '0xB7c91068aC96051573465E43603600C0684a7002'
+  USD = '0x77fE6614775129c2a4afDe0a7859d78110c2b4a1'
+  DAI = '0xbC85D0DfBd426434E222b6D382A3E215eC9dCf06'
+  CRP_FACTORY = '0x1CcFa6Ac3fEE7F93b22423Db6ee3F21A2AE2ad14'
 }
 
 if (network == 'xdai') {
   WETH = '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1'
   USD = '0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83'
   DAI = '0x44fA8E6f47987339850636F88629646662444217'
-  CRP_FACTORY = ''
+  CRP_FACTORY = '0x28088C64341cbE7Bf90B04786cDBfd1f650d34CC'
 }
 
 
-export function hexToDecimal(hexString: String, decimals: i32): BigDecimal {
+export function hexToDecimal(hexString: string, decimals: i32): BigDecimal {
   let bytes = Bytes.fromHexString(hexString).reverse() as Bytes
   let bi = BigInt.fromUnsignedBytes(bytes)
   let scale = BigInt.fromI32(10).pow(decimals as u8).toBigDecimal()
@@ -93,41 +93,40 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
   let symbol = ''
   let name = ''
   let decimals = 18
-  let network = dataSource.network()
 
-  // COMMENT THE LINES BELOW OUT FOR LOCAL DEV, KOVAN, SOKOL OR XDAI
+  // COMMENT THE LINES BELOW OUT FOR LOCAL DEV, KOVAN, SOKOL
 
-  // let symbolCall = token.try_symbol()
-  // let nameCall = token.try_name()
-  // let decimalCall = token.try_decimals()
+  let symbolCall = token.try_symbol()
+  let nameCall = token.try_name()
+  let decimalCall = token.try_decimals()
 
-  // if (symbolCall.reverted) {
-  //   let symbolBytesCall = tokenBytes.try_symbol()
-  //   if (!symbolBytesCall.reverted) {
-  //     symbol = symbolBytesCall.value.toString()
-  //   }
-  // } else {
-  //   symbol = symbolCall.value
-  // }
+  if (symbolCall.reverted) {
+    let symbolBytesCall = tokenBytes.try_symbol()
+    if (!symbolBytesCall.reverted) {
+      symbol = symbolBytesCall.value.toString()
+    }
+  } else {
+    symbol = symbolCall.value
+  }
 
-  // if (nameCall.reverted) {
-  //   let nameBytesCall = tokenBytes.try_name()
-  //   if (!nameBytesCall.reverted) {
-  //     name = nameBytesCall.value.toString()
-  //   }
-  // } else {
-  //   name = nameCall.value
-  // }
+  if (nameCall.reverted) {
+    let nameBytesCall = tokenBytes.try_name()
+    if (!nameBytesCall.reverted) {
+      name = nameBytesCall.value.toString()
+    }
+  } else {
+    name = nameCall.value
+  }
 
-  // if (!decimalCall.reverted) {
-  //   decimals = decimalCall.value
-  // }
+  if (!decimalCall.reverted) {
+    decimals = decimalCall.value
+  }
 
   // COMMENT THE LINES ABOVE OUT FOR LOCAL DEV, KOVAN, SOKOL OR XDAI
 
   // !!! COMMENT THE LINES BELOW OUT FOR NON-LOCAL DEPLOYMENT
   // This code allows Symbols to be added when testing on local Kovan
-  
+  /*
   if (network == 'kovan') {
     if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
       symbol = 'WETH';
@@ -193,7 +192,7 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
     else if(address == '0x2977893F4C04bfbd6EFc68d0e46598d27810d3dB')
       symbol = 'BID'
   }
-
+  */
   // !!! COMMENT THE LINES ABOVE OUT FOR NON-LOCAL DEPLOYMENT
 
   let poolToken = new PoolToken(id)
@@ -259,6 +258,7 @@ export function updatePoolLiquidity(id: string): void {
       let poolToken = PoolToken.load(poolTokenId)
 
       if (
+        pool.active && !pool.crp && pool.tokensCount.notEqual(BigInt.fromI32(0)) && pool.publicSwap &&
         (tokenPrice.poolTokenId == poolTokenId || poolLiquidity.gt(tokenPrice.poolLiquidity)) &&
         (
           (tokenPriceId != WETH.toString() && tokenPriceId != DAI.toString()) ||
@@ -292,7 +292,7 @@ export function updatePoolLiquidity(id: string): void {
     if (tokenPrice !== null) {
       let poolTokenId = id.concat('-').concat(tokenPriceId)
       let poolToken = PoolToken.load(poolTokenId)
-      if (poolToken.denormWeight.gt(denormWeight)) {
+      if (tokenPrice.price.gt(ZERO_BD) && poolToken.denormWeight.gt(denormWeight)) {
         denormWeight = poolToken.denormWeight
         liquidity = tokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
       }
@@ -349,6 +349,12 @@ export function isCrp(address: Address): boolean {
   let isCrp = crpFactory.try_isCrp(address)
   if (isCrp.reverted) return false
   return isCrp.value
+}
+
+export function getCrpUnderlyingPool(crp: ConfigurableRightsPool): string | null {
+  let bPool = crp.try_bPool()
+  if (bPool.reverted) return null;
+  return bPool.value.toHexString()
 }
 
 export function getCrpController(crp: ConfigurableRightsPool): string | null {

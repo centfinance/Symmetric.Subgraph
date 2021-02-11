@@ -1,6 +1,6 @@
 specVersion: 0.0.2
-description: Cent Swap is a non-custodial portfolio manager, liquidity provider, and price sensor.
-repository: https://github.com/centfinance/centswap-subgraph
+description: Cent is a non-custodial portfolio manager, liquidity provider, and price sensor.
+repository: https://github.com/centfinance/Cent.Dex_subgraph.git
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,7 +8,7 @@ dataSources:
     name: Factory
     network: xdai
     source:
-      address: "0x6e741a0bc8499FBa85E6889690FA040Fcc5fdaD8"
+      address: "0xD21B8c3F9F3b2487F65e199fB1ea1753412d16A8"
       abi: Factory
       startBlock: 13108160
     mapping:
@@ -17,10 +17,14 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
-        - Balancer
+        - Cent
       abis:
         - name: Factory
           file: ./abis/BFactory.json
+        - name: CRPFactory
+          file: ./abis/CRPFactory.json
+        - name: ConfigurableRightsPool
+          file: ./abis/ConfigurableRightsPool.json
       eventHandlers:
         - event: LOG_NEW_POOL(indexed address,indexed address)
           handler: handleNewPool
@@ -37,7 +41,7 @@ templates:
       file: ./src/mappings/pool.ts
       entities:
         - Pool
-        - Balancer
+        - Cent
         - Swap
       abis:
         - name: Pool
@@ -76,3 +80,21 @@ templates:
           handler: handleSwap
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+  - kind: ethereum/contract
+    name: CrpController
+    network: xdai
+    source:
+      abi: ConfigurableRightsPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/pool.ts
+      entities:
+        - Pool
+      abis:
+        - name: ConfigurableRightsPool
+          file: ./abis/ConfigurableRightsPool.json
+      eventHandlers:
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleSetCrpController

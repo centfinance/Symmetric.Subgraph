@@ -16,10 +16,12 @@ import {
   createPoolShareEntity,
   createPoolTokenEntity,
   updatePoolLiquidity,
+  getCrpUnderlyingPool,
   saveTransaction,
   ZERO_BD,
   decrPoolCount
 } from './helpers'
+import { ConfigurableRightsPool, OwnershipTransferred } from '../types/Factory/ConfigurableRightsPool'
 
 /************************************
  ********** Pool Controls ***********
@@ -43,6 +45,18 @@ export function handleSetController(event: LOG_CALL): void {
   pool.save()
 
   saveTransaction(event, 'setController')
+}
+
+export function handleSetCrpController(event: OwnershipTransferred): void {
+  // This event occurs on the CRP contract rather than the underlying pool so we must perform a lookup.
+  let crp = ConfigurableRightsPool.bind(event.address)
+  let pool = Pool.load(getCrpUnderlyingPool(crp))
+  pool.crpController = event.params.newOwner
+  pool.save()
+
+  // We overwrite event address so that ownership transfers can be linked to Pool entities for above reason.
+  event.address = Address.fromString(pool.id)
+  saveTransaction(event, 'setCrpController')
 }
 
 export function handleSetPublicSwap(event: LOG_CALL): void {
@@ -279,6 +293,7 @@ export function handleSwap(event: LOG_SWAP): void {
   let liquidity = pool.liquidity
   let swapValue = ZERO_BD
   let swapFeeValue = ZERO_BD
+  let factory = Balancer.load('1')
 
   if (tokenOutPriceValue.gt(ZERO_BD)) {
     swapValue = tokenOutPriceValue.times(tokenAmountOut)
@@ -286,15 +301,16 @@ export function handleSwap(event: LOG_SWAP): void {
     totalSwapVolume = totalSwapVolume.plus(swapValue)
     totalSwapFee = totalSwapFee.plus(swapFeeValue)
 
-    let factory = Balancer.load('1')
     factory.totalSwapVolume = factory.totalSwapVolume.plus(swapValue)
     factory.totalSwapFee = factory.totalSwapFee.plus(swapFeeValue)
-    factory.save()
 
     pool.totalSwapVolume = totalSwapVolume
     pool.totalSwapFee = totalSwapFee
   }
   pool.swapsCount += BigInt.fromI32(1)
+  factory.txCount += BigInt.fromI32(1)
+  factory.save()
+
   if (newAmountIn.equals(ZERO_BD) || newAmountOut.equals(ZERO_BD)) {
     decrPoolCount(pool.active, pool.finalized, pool.crp)
     pool.active = false

@@ -1,6 +1,6 @@
 specVersion: 0.0.2
-description: Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor.
-repository: https://github.com/balancer-labs/balancer-subgraph
+description: Cent is a non-custodial portfolio manager, liquidity provider, and price sensor.
+repository: https://github.com/centfinance/Cent.Dex_subgraph.git
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,7 +8,7 @@ dataSources:
     name: Factory
     network: kovan
     source:
-      address: "0x8f7F78080219d4066A8036ccD30D588B416a40DB"
+      address: "0xf5fc5042d8424619BB318bAeDd0f0F1A591f2a3A"
       abi: Factory
       startBlock: 16337546
     mapping:
@@ -17,7 +17,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
-        - Balancer
+        - Cent
       abis:
         - name: Factory
           file: ./abis/BFactory.json
@@ -41,7 +41,7 @@ templates:
       file: ./src/mappings/pool.ts
       entities:
         - Pool
-        - Balancer
+        - Cent
         - Swap
       abis:
         - name: Pool
@@ -83,3 +83,21 @@ templates:
       callHandlers:
         - function: gulp(address)
           handler: handleGulp
+  - kind: ethereum/contract
+    name: CrpController
+    network: kovan
+    source:
+      abi: ConfigurableRightsPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/pool.ts
+      entities:
+        - Pool
+      abis:
+        - name: ConfigurableRightsPool
+          file: ./abis/ConfigurableRightsPool.json
+      eventHandlers:
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleSetCrpController
