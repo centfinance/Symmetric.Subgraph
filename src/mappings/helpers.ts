@@ -58,7 +58,6 @@ if (network == 'xdai') {
   CRP_FACTORY = '0x28088C64341cbE7Bf90B04786cDBfd1f650d34CC'
 }
 
-
 export function hexToDecimal(hexString: string, decimals: i32): BigDecimal {
   let bytes = Bytes.fromHexString(hexString).reverse() as Bytes
   let bi = BigInt.fromUnsignedBytes(bytes)
@@ -94,7 +93,7 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
   let name = ''
   let decimals = 18
 
-  // COMMENT THE LINES BELOW OUT FOR LOCAL DEV, KOVAN, SOKOL
+  // COMMENT THE LINES BELOW OUT FOR LOCAL DEV ON KOVAN
 
   let symbolCall = token.try_symbol()
   let nameCall = token.try_name()
@@ -122,76 +121,25 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
     decimals = decimalCall.value
   }
 
-  // COMMENT THE LINES ABOVE OUT FOR LOCAL DEV, KOVAN, SOKOL OR XDAI
+  // COMMENT THE LINES ABOVE OUT FOR LOCAL DEV ON KOVAN
 
   // !!! COMMENT THE LINES BELOW OUT FOR NON-LOCAL DEPLOYMENT
   // This code allows Symbols to be added when testing on local Kovan
   /*
-  if (network == 'kovan') {
-    if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
-      symbol = 'WETH';
-    else if(address == '0x1528f3fcc26d13f7079325fb78d9442607781c8c')
-      symbol = 'DAI'
-    else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
-      symbol = 'MKR'
-    else if(address == '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5')
-      symbol = 'USDC'
-    else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
-      symbol = 'BAT'
-    else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
-      symbol = 'SNX'
-    else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
-      symbol = 'REP'
-  }
-
-  if (network == 'rinkeby') {
-    if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
-      symbol = 'WETH';
-    else if(address == '0x1528f3fcc26d13f7079325fb78d9442607781c8c')
-      symbol = 'DAI'
-    else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
-      symbol = 'MKR'
-    else if(address == '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5')
-      symbol = 'USDC'
-    else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
-      symbol = 'BAT'
-    else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
-      symbol = 'SNX'
-    else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
-      symbol = 'REP'
-  }
-
-  if (network == 'sokol') {
-    if(address == '0xb7c91068ac96051573465e43603600c0684a7002')
-      symbol = 'WETH';
-      else if(address == '0x2e422c7fb2b5149a28d2c408f830504b873f14b1')
-        symbol = 'WPOA'
-      else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
-        symbol = 'MKR'
-      else if(address == '0x1b457C787792d17bea8d41885aDa00E764712cDD')
-        symbol = 'USDC'
-      else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
-        symbol = 'BAT'
-      else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
-        symbol = 'SNX'
-      else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
-        symbol = 'REP'
-  }
-
-  if (network == 'xdai') {
-    if(address == '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1')
-      symbol = 'WETH';
-    else if(address == '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e')
-      symbol = 'STAKE'
-    else if(address == '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d')
-      symbol = 'WXDAI'
-    else if(address == '0xE2e73A1c69ecF83F464EFCE6A5be353a37cA09b2')
-      symbol = 'LINK'
-    else if(address == '0x8e5bBbb09Ed1ebdE8674Cda39A0c169401db4252')
-      symbol = 'WBTC'
-    else if(address == '0x2977893F4C04bfbd6EFc68d0e46598d27810d3dB')
-      symbol = 'BID'
-  }
+  if(address == '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
+    symbol = 'WETH';
+  else if(address == '0x1528f3fcc26d13f7079325fb78d9442607781c8c')
+    symbol = 'DAI'
+  else if(address == '0xef13c0c8abcaf5767160018d268f9697ae4f5375')
+    symbol = 'MKR'
+  else if(address == '0x2f375e94fc336cdec2dc0ccb5277fe59cbf1cae5')
+    symbol = 'USDC'
+  else if(address == '0x1f1f156e0317167c11aa412e3d1435ea29dc3cce')
+    symbol = 'BAT'
+  else if(address == '0x86436bce20258a6dcfe48c9512d4d49a30c4d8c4')
+    symbol = 'SNX'
+  else if(address == '0x8c9e6c40d3402480ace624730524facc5482798c')
+    symbol = 'REP'
   */
   // !!! COMMENT THE LINES ABOVE OUT FOR NON-LOCAL DEPLOYMENT
 
@@ -210,6 +158,12 @@ export function updatePoolLiquidity(id: string): void {
   let pool = Pool.load(id)
   let tokensList: Array<Bytes> = pool.tokensList
 
+  if (pool.tokensCount.equals(BigInt.fromI32(0))) {
+    pool.liquidity = ZERO_BD
+    pool.save()
+    return
+  }
+
   if (!tokensList || pool.tokensCount.lt(BigInt.fromI32(2)) || !pool.publicSwap) return
 
   // Find pool liquidity
@@ -221,7 +175,10 @@ export function updatePoolLiquidity(id: string): void {
   if (tokensList.includes(Address.fromString(USD))) {
     let usdPoolTokenId = id.concat('-').concat(USD)
     let usdPoolToken = PoolToken.load(usdPoolTokenId)
-    poolLiquidity = usdPoolToken.balance.div(usdPoolToken.denormWeight).times(pool.totalWeight)
+    if (usdPoolToken != null)
+    {
+      poolLiquidity = usdPoolToken.balance.div(usdPoolToken.denormWeight).times(pool.totalWeight)
+    }
     hasPrice = true
     hasUsdPrice = true
   } else if (tokensList.includes(Address.fromString(WETH))) {

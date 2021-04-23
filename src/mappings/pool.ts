@@ -59,6 +59,7 @@ export function handleSetCrpController(event: OwnershipTransferred): void {
   saveTransaction(event, 'setCrpController')
 }
 
+
 export function handleSetPublicSwap(event: LOG_CALL): void {
   let poolId = event.address.toHex()
   let pool = Pool.load(poolId)
@@ -160,6 +161,7 @@ export function handleUnbind(event: LOG_CALL): void {
   pool.save()
   store.remove('PoolToken', poolTokenId)
 
+  updatePoolLiquidity(poolId)
   saveTransaction(event, 'unbind')
 }
 
@@ -221,7 +223,7 @@ export function handleExitPool(event: LOG_EXIT): void {
   poolToken.save()
 
   let pool = Pool.load(poolId)
-  pool.exitsCount += BigInt.fromI32(1)
+  pool.exitsCount = pool.exitsCount.plus(BigInt.fromI32(1))
   if (newAmount.equals(ZERO_BD)) {
     decrPoolCount(pool.active, pool.finalized, pool.crp)
     pool.active = false
@@ -301,14 +303,17 @@ export function handleSwap(event: LOG_SWAP): void {
     totalSwapVolume = totalSwapVolume.plus(swapValue)
     totalSwapFee = totalSwapFee.plus(swapFeeValue)
 
+
     factory.totalSwapVolume = factory.totalSwapVolume.plus(swapValue)
     factory.totalSwapFee = factory.totalSwapFee.plus(swapFeeValue)
 
     pool.totalSwapVolume = totalSwapVolume
     pool.totalSwapFee = totalSwapFee
   }
-  pool.swapsCount += BigInt.fromI32(1)
-  factory.txCount += BigInt.fromI32(1)
+
+  pool.swapsCount = pool.swapsCount.plus(BigInt.fromI32(1))
+  factory.txCount = factory.txCount.plus(BigInt.fromI32(1))
+
   factory.save()
 
   if (newAmountIn.equals(ZERO_BD) || newAmountOut.equals(ZERO_BD)) {

@@ -17,7 +17,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
-        - Cent
+        - Balancer
       abis:
         - name: Factory
           file: ./abis/BFactory.json
@@ -41,7 +41,7 @@ templates:
       file: ./src/mappings/pool.ts
       entities:
         - Pool
-        - Cent
+        - Balancer
         - Swap
       abis:
         - name: Pool

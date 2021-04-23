@@ -6,18 +6,18 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: ganache
+    network: xdai
     source:
       address: "0xD21B8c3F9F3b2487F65e199fB1ea1753412d16A8"
       abi: Factory
-      startBlock: 1
+      startBlock: 13108160
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
-        - Cent
+        - Balancer
       abis:
         - name: Factory
           file: ./abis/BFactory.json
@@ -31,7 +31,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: ganache
+    network: xdai
     source:
       abi: Pool
     mapping:
@@ -41,7 +41,7 @@ templates:
       file: ./src/mappings/pool.ts
       entities:
         - Pool
-        - Cent
+        - Balancer
         - Swap
       abis:
         - name: Pool
