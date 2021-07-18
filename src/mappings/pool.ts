@@ -75,7 +75,7 @@ export function handleFinalize(event: LOG_CALL): void {
   let pool = Pool.load(poolId)
   // let balance = BigDecimal.fromString('100')
   pool.finalized = true
-  pool.symbol = 'BPT'
+  pool.symbol = 'CPT'
   pool.publicSwap = true
   // pool.totalShares = balance
   pool.save()
@@ -223,7 +223,7 @@ export function handleExitPool(event: LOG_EXIT): void {
   poolToken.save()
 
   let pool = Pool.load(poolId)
-  pool.exitsCount = pool.exitsCount.plus(BigInt.fromI32(1))
+  pool.exitsCount += BigInt.fromI32(1)
   if (newAmount.equals(ZERO_BD)) {
     decrPoolCount(pool.active, pool.finalized, pool.crp)
     pool.active = false
@@ -311,9 +311,8 @@ export function handleSwap(event: LOG_SWAP): void {
     pool.totalSwapFee = totalSwapFee
   }
 
-  pool.swapsCount = pool.swapsCount.plus(BigInt.fromI32(1))
-  factory.txCount = factory.txCount.plus(BigInt.fromI32(1))
-
+  pool.swapsCount += BigInt.fromI32(1)
+  factory.txCount += BigInt.fromI32(1)
   factory.save()
 
   if (newAmountIn.equals(ZERO_BD) || newAmountOut.equals(ZERO_BD)) {

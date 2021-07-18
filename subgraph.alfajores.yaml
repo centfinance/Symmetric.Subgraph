@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Factory
-    network: kovan
+    network: celo-alfajores
     source:
-      address: "0xf5fc5042d8424619BB318bAeDd0f0F1A591f2a3A"
+      address: "0x07Fa70d4560663E64b44a217AD40a926Dc5BdA5c"
       abi: Factory
-      startBlock: 16337546
+      startBlock: 1049549
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -31,7 +31,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: Pool
-    network: kovan
+    network: celo-alfajores
     source:
       abi: Pool
     mapping:
@@ -82,7 +82,7 @@ templates:
           handler: handleTransfer
   - kind: ethereum/contract
     name: CrpController
-    network: kovan
+    network: celo-alfajores
     source:
       abi: ConfigurableRightsPool
     mapping:

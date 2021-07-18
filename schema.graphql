@@ -1,4 +1,4 @@
-type Balancer @entity {
+type Symmetric @entity {
     id: ID!
     color: String!                                      # Bronze, Silver, Gold
     poolCount: Int!                                     # Number of pools
@@ -38,7 +38,7 @@ type Pool @entity {
     joinsCount: BigInt!                                 # liquidity has been added
     exitsCount: BigInt!                                 # liquidity has been removed
     swapsCount: BigInt!
-    factoryID: Balancer!
+    factoryID: Symmetric!
     tx: Bytes                                           # Pool creation transaction id
     swaps: [Swap!] @derivedFrom(field: "poolAddress")
 }

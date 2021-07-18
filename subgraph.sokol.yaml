@@ -1,6 +1,6 @@
 specVersion: 0.0.2
-description: Cent is a non-custodial portfolio manager, liquidity provider, and price sensor.
-repository: https://github.com/centfinance/Cent.Dex_subgraph.git
+description: Symmetric is a non-custodial portfolio manager, liquidity provider, and price sensor.
+repository: https://github.com/centfinance/Symmetric.Subgraph.git
 schema:
   file: ./schema.graphql
 dataSources:
@@ -10,14 +10,14 @@ dataSources:
     source:
       address: "0x3B4261a0A617a01ff7994bD15896ab1d384baABF"
       abi: Factory
-      startBlock: 16822042
+      startBlock: 6822042
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
-        - Cent
+        - Symmetric
       abis:
         - name: Factory
           file: ./abis/BFactory.json
@@ -41,7 +41,7 @@ templates:
       file: ./src/mappings/pool.ts
       entities:
         - Pool
-        - Cent
+        - Symmetric
         - Swap
       abis:
         - name: Pool
