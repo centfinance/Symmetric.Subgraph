@@ -82,7 +82,7 @@ if (network == 'celo-alfajores') {
   CELO = '0xf194afdf50b03e69bd7d057c1aa9e10c9954e4c9'
   CUSD = '0x874069fa1eb16d44d622f2e0ca25eea172369bc1'
   CEUR = '0x10c892a6ec43a53e45d0b916b4b7d383b1b78c0f'
-  CRP_FACTORY = '0x18E383528e5110a61044621d0A37C67C5fCB0588'
+  CRP_FACTORY = '0x1A262F4BD2C88064fc0ec0dE1F343f13D517afED'
 }
 
 export function hexToDecimal(hexString: string, decimals: i32): BigDecimal {
