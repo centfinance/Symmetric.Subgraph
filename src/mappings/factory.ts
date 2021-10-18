@@ -1,6 +1,6 @@
 import { Address, BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 import { LOG_NEW_POOL } from '../types/Factory/Factory'
-import { Balancer, Pool } from '../types/schema'
+import { Symmetric, Pool } from '../types/schema'
 import { Pool as PoolContract, CrpController as CrpControllerContract } from '../types/templates'
 import {
   ZERO_BD,
@@ -14,11 +14,11 @@ import {
 import { ConfigurableRightsPool } from '../types/Factory/ConfigurableRightsPool';
 
 export function handleNewPool(event: LOG_NEW_POOL): void {
-  let factory = Balancer.load('1')
+  let factory = Symmetric.load('1')
 
   // if no factory yet, set up blank initial
   if (factory == null) {
-    factory = new Balancer('1')
+    factory = new Symmetric('1')
     factory.color = 'Bronze'
     factory.poolCount = 0
     factory.finalizedPoolCount = 0
@@ -37,7 +37,14 @@ export function handleNewPool(event: LOG_NEW_POOL): void {
     let crp = ConfigurableRightsPool.bind(event.params.caller)
     pool.symbol = getCrpSymbol(crp)
     pool.name = getCrpName(crp)
-    pool.crpController = Address.fromString(getCrpController(crp))
+    
+    let maybeValue = getCrpController(crp);
+    if (maybeValue)
+    {
+      pool.crpController = Address.fromString(maybeValue)
+    }
+
+    
     pool.rights = getCrpRights(crp)
     pool.cap = getCrpCap(crp)
 
