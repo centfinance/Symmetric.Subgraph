@@ -13,7 +13,7 @@ dataSources:
       startBlock: 6822042
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
@@ -36,7 +36,7 @@ templates:
       abi: Pool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/pool.ts
       entities:
@@ -87,7 +87,7 @@ templates:
       abi: ConfigurableRightsPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/mappings/pool.ts
       entities:

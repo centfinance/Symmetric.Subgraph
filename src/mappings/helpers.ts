@@ -13,7 +13,7 @@ import {
   PoolShare,
   TokenPrice,
   Transaction,
-  Balancer
+  Symmetric
 } from '../types/schema'
 import { CTokenBytes } from '../types/templates/Pool/CTokenBytes'
 import { CToken } from '../types/templates/Pool/CToken'
@@ -32,6 +32,7 @@ let CELO = '';
 let CUSD = '';
 let CEUR = '';
 let WSPOA = '';
+let BTC = '';
 
 let CRP_FACTORY = '';
 
@@ -75,6 +76,7 @@ if (network == 'celo') {
   CELO = '0x471ece3750da237f93b8e339c536989b8978a438'
   CUSD = '0x765de816845861e75a25fca122bb6898b8b1282a'
   CEUR = '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73'
+  BTC = '0xD629eb00dEced2a080B7EC630eF6aC117e614f1b'
   CRP_FACTORY = '0xF880b3F352C8D95918a28aA5EDF05Cf8869409E4'
 }
 
@@ -171,209 +173,245 @@ export function createPoolTokenEntity(id: string, pool: string, address: string)
   // !!! COMMENT THE LINES ABOVE OUT FOR NON-LOCAL DEPLOYMENT
 
   let poolToken = new PoolToken(id)
-  poolToken.poolId = pool
-  poolToken.address = address
-  poolToken.name = name
-  poolToken.symbol = symbol
-  poolToken.decimals = decimals
-  poolToken.balance = ZERO_BD
-  poolToken.denormWeight = ZERO_BD
-  poolToken.save()
+  if (poolToken != null)
+  {
+    poolToken.poolId = pool
+    poolToken.address = address
+    poolToken.name = name
+    poolToken.symbol = symbol
+    poolToken.decimals = decimals
+    poolToken.balance = ZERO_BD
+    poolToken.denormWeight = ZERO_BD
+    poolToken.save()
+  }
 }
 
 export function updatePoolLiquidity(id: string): void {
   let pool = Pool.load(id)
-  let tokensList: Array<Bytes> = pool.tokensList
+  if (pool != null)
+  {
+    let tokensList: Array<Bytes> = pool.tokensList
 
-  if (pool.tokensCount.equals(BigInt.fromI32(0))) {
-    pool.liquidity = ZERO_BD
-    pool.save()
-    return
-  }
+    if (pool.tokensCount.equals(BigInt.fromI32(0))) {
+      pool.liquidity = ZERO_BD
+      pool.save()
+      return
+    }
 
-  if (!tokensList || pool.tokensCount.lt(BigInt.fromI32(2)) || !pool.publicSwap) return
+    if (!tokensList || pool.tokensCount.lt(BigInt.fromI32(2)) || !pool.publicSwap) return
 
-  // Find pool liquidity
+    // Find pool liquidity
 
-  let hasPrice = false
-  let hasUsdPrice = false
-  let poolLiquidity = ZERO_BD
+    let hasPrice = false
+    let hasUsdPrice = false
+    let poolLiquidity = ZERO_BD
 
-  let network = dataSource.network()
-  if (network == "celo" || network == "celo-alfajores") {
-    if (tokensList.includes(Address.fromString(CUSD))) {
-      let cusdPoolTokenId = id.concat('-').concat(CUSD)
-      let cusdPoolToken = PoolToken.load(cusdPoolTokenId)
-      if (cusdPoolToken != null) {
-        poolLiquidity = cusdPoolToken.balance.div(cusdPoolToken.denormWeight).times(pool.totalWeight)
-      }
-      hasPrice = true
-      hasUsdPrice = true
-    } else if (tokensList.includes(Address.fromString(CELO))) {
-      let celoTokenPrice = TokenPrice.load(CELO)
-      if (celoTokenPrice !== null) {
-        let poolTokenId = id.concat('-').concat(CELO)
-        let poolToken = PoolToken.load(poolTokenId)
-        poolLiquidity = celoTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+    let network = dataSource.network()
+    if (network == "celo" || network == "celo-alfajores") {
+      if (tokensList.includes(Address.fromString(CUSD))) {
+        let cusdPoolTokenId = id.concat('-').concat(CUSD)
+        let cusdPoolToken = PoolToken.load(cusdPoolTokenId)
+        if (cusdPoolToken != null) {
+          poolLiquidity = cusdPoolToken.balance.div(cusdPoolToken.denormWeight).times(pool.totalWeight)
+        }
         hasPrice = true
-      }
-    } else if (tokensList.includes(Address.fromString(CEUR))) {
-      let ceurTokenPrice = TokenPrice.load(CEUR)
-      if (ceurTokenPrice !== null) {
-        let poolTokenId = id.concat('-').concat(CEUR)
-        let poolToken = PoolToken.load(poolTokenId)
-        poolLiquidity = ceurTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+        hasUsdPrice = true
+      } else if (tokensList.includes(Address.fromString(CELO))) {
+        let celoTokenPrice = TokenPrice.load(CELO)
+        if (celoTokenPrice !== null) {
+          let poolTokenId = id.concat('-').concat(CELO)
+          let poolToken = PoolToken.load(poolTokenId)
+          if (poolToken != null)
+          {
+            poolLiquidity = celoTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+          }
+          hasPrice = true
+        }
+      } else if (tokensList.includes(Address.fromString(CEUR))) {
+        let ceurTokenPrice = TokenPrice.load(CEUR)
+        if (ceurTokenPrice !== null) {
+          let poolTokenId = id.concat('-').concat(CEUR)
+          let poolToken = PoolToken.load(poolTokenId)
+          if (poolToken != null)
+          {
+            poolLiquidity = ceurTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+          }
+          hasPrice = true
+        }
+      } 
+    } else if (network == 'xdai') {
+      if (tokensList.includes(Address.fromString(USD))) {
+        let usdPoolTokenId = id.concat('-').concat(USD)
+        let usdPoolToken = PoolToken.load(usdPoolTokenId)
+        if (usdPoolToken != null) {
+          poolLiquidity = usdPoolToken.balance.div(usdPoolToken.denormWeight).times(pool.totalWeight)
+        }
         hasPrice = true
+        hasUsdPrice = true
+      } else if (tokensList.includes(Address.fromString(WXDAI))) {
+        let wxdaiPoolTokenId = id.concat('-').concat(WXDAI)
+        let wxdaiPoolToken = PoolToken.load(wxdaiPoolTokenId)
+        if (wxdaiPoolToken != null) {
+          poolLiquidity = wxdaiPoolToken.balance.div(wxdaiPoolToken.denormWeight).times(pool.totalWeight)
+        }
+        hasPrice = true
+      } else if (tokensList.includes(Address.fromString(WETH))) {
+        let wethTokenPrice = TokenPrice.load(WETH)
+        if (wethTokenPrice !== null) {
+          let poolTokenId = id.concat('-').concat(WETH)
+          let poolToken = PoolToken.load(poolTokenId)
+          if (poolToken != null)
+          {
+            poolLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+          }
+          hasPrice = true
+        }
+      }
+    } else if (network == 'poa-sokol') {
+      if (tokensList.includes(Address.fromString(WSPOA))) {
+        let wspoaTokenPrice = TokenPrice.load(WSPOA)
+        if (wspoaTokenPrice !== null) {
+          let poolTokenId = id.concat('-').concat(WSPOA)
+          let poolToken = PoolToken.load(poolTokenId)
+          if (poolToken != null)
+          {
+            poolLiquidity = wspoaTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+          }
+          hasPrice = true
+        }
+      } else if (tokensList.includes(Address.fromString(WXDAI))) {
+        let wxdaiPoolTokenId = id.concat('-').concat(WXDAI)
+        let wxdaiPoolToken = PoolToken.load(wxdaiPoolTokenId)
+        if (wxdaiPoolToken != null) {
+          poolLiquidity = wxdaiPoolToken.balance.div(wxdaiPoolToken.denormWeight).times(pool.totalWeight)
+        }
+        hasPrice = true
+      } else if (tokensList.includes(Address.fromString(WETH))) {
+        let wethTokenPrice = TokenPrice.load(WETH)
+        if (wethTokenPrice !== null) {
+          let poolTokenId = id.concat('-').concat(WETH)
+          let poolToken = PoolToken.load(poolTokenId)
+          if (poolToken != null)
+          {
+            poolLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+          }
+          hasPrice = true
+        }
+      }
+    } else {
+      if (tokensList.includes(Address.fromString(USD))) {
+        let usdPoolTokenId = id.concat('-').concat(USD)
+        let usdPoolToken = PoolToken.load(usdPoolTokenId)
+        if (usdPoolToken != null) {
+          poolLiquidity = usdPoolToken.balance.div(usdPoolToken.denormWeight).times(pool.totalWeight)
+        }
+        hasPrice = true
+        hasUsdPrice = true
+      } else if (tokensList.includes(Address.fromString(WETH))) {
+        let wethTokenPrice = TokenPrice.load(WETH)
+        if (wethTokenPrice !== null) {
+          let poolTokenId = id.concat('-').concat(WETH)
+          let poolToken = PoolToken.load(poolTokenId)
+          if (poolToken != null)
+          {
+            poolLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+          }
+          hasPrice = true
+        }
+      } else if (tokensList.includes(Address.fromString(DAI))) {
+        let daiTokenPrice = TokenPrice.load(DAI)
+        if (daiTokenPrice !== null) {
+          let poolTokenId = id.concat('-').concat(DAI)
+          let poolToken = PoolToken.load(poolTokenId)
+          if (poolToken != null)
+          {
+            poolLiquidity = daiTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+            hasPrice = true
+          }
+        }
       }
     }
-  } else if (network == 'xdai') {
-    if (tokensList.includes(Address.fromString(USD))) {
-      let usdPoolTokenId = id.concat('-').concat(USD)
-      let usdPoolToken = PoolToken.load(usdPoolTokenId)
-      if (usdPoolToken != null) {
-        poolLiquidity = usdPoolToken.balance.div(usdPoolToken.denormWeight).times(pool.totalWeight)
-      }
-      hasPrice = true
-      hasUsdPrice = true
-    } else if (tokensList.includes(Address.fromString(WXDAI))) {
-      let wxdaiPoolTokenId = id.concat('-').concat(WXDAI)
-      let wxdaiPoolToken = PoolToken.load(wxdaiPoolTokenId)
-      if (wxdaiPoolToken != null) {
-        poolLiquidity = wxdaiPoolToken.balance.div(wxdaiPoolToken.denormWeight).times(pool.totalWeight)
-      }
-      hasPrice = true
-    } else if (tokensList.includes(Address.fromString(WETH))) {
-      let wethTokenPrice = TokenPrice.load(WETH)
-      if (wethTokenPrice !== null) {
-        let poolTokenId = id.concat('-').concat(WETH)
+    // Create or update token price
+    if (hasPrice) {
+      for (let i = 0; i < tokensList.length; i++) {
+        let tokenPriceId = tokensList[i].toHexString()
+        let tokenPrice = TokenPrice.load(tokenPriceId)
+        if (tokenPrice == null) {
+          tokenPrice = new TokenPrice(tokenPriceId)
+          tokenPrice.poolTokenId = ''
+          tokenPrice.poolLiquidity = ZERO_BD
+        }
+
+        let poolTokenId = id.concat('-').concat(tokenPriceId)
         let poolToken = PoolToken.load(poolTokenId)
-        poolLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-        hasPrice = true
+        if (poolToken != null)
+        {
+          if (
+            pool.active && !pool.crp && pool.tokensCount.notEqual(BigInt.fromI32(0)) && pool.publicSwap &&
+            (
+              (tokenPriceId != WETH.toString() && tokenPriceId != DAI.toString()) ||
+              (pool.tokensCount.equals(BigInt.fromI32(2)) && hasUsdPrice)
+            )
+          ) {
+            tokenPrice.price = ZERO_BD
+
+            if (poolToken.balance.gt(ZERO_BD)) {
+              tokenPrice.price = poolLiquidity.div(pool.totalWeight).times(poolToken.denormWeight).div(poolToken.balance)
+            }
+
+            tokenPrice.symbol = poolToken.symbol
+            tokenPrice.name = poolToken.name
+            tokenPrice.decimals = poolToken.decimals
+            tokenPrice.poolLiquidity = poolLiquidity
+            tokenPrice.poolTokenId = poolTokenId
+            tokenPrice.save()
+          }
+        }
       }
     }
-  } else if (network == 'poa-sokol') {
-    if (tokensList.includes(Address.fromString(WSPOA))) {
-      let wspoaTokenPrice = TokenPrice.load(WSPOA)
-      if (wspoaTokenPrice !== null) {
-        let poolTokenId = id.concat('-').concat(WSPOA)
-        let poolToken = PoolToken.load(poolTokenId)
-        poolLiquidity = wspoaTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-        hasPrice = true
-      }
-    } else if (tokensList.includes(Address.fromString(WXDAI))) {
-      let wxdaiPoolTokenId = id.concat('-').concat(WXDAI)
-      let wxdaiPoolToken = PoolToken.load(wxdaiPoolTokenId)
-      if (wxdaiPoolToken != null) {
-        poolLiquidity = wxdaiPoolToken.balance.div(wxdaiPoolToken.denormWeight).times(pool.totalWeight)
-      }
-      hasPrice = true
-    } else if (tokensList.includes(Address.fromString(WETH))) {
-      let wethTokenPrice = TokenPrice.load(WETH)
-      if (wethTokenPrice !== null) {
-        let poolTokenId = id.concat('-').concat(WETH)
-        let poolToken = PoolToken.load(poolTokenId)
-        poolLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-        hasPrice = true
-      }
-    }
-  } else {
-    if (tokensList.includes(Address.fromString(USD))) {
-      let usdPoolTokenId = id.concat('-').concat(USD)
-      let usdPoolToken = PoolToken.load(usdPoolTokenId)
-      if (usdPoolToken != null) {
-        poolLiquidity = usdPoolToken.balance.div(usdPoolToken.denormWeight).times(pool.totalWeight)
-      }
-      hasPrice = true
-      hasUsdPrice = true
-    } else if (tokensList.includes(Address.fromString(WETH))) {
-      let wethTokenPrice = TokenPrice.load(WETH)
-      if (wethTokenPrice !== null) {
-        let poolTokenId = id.concat('-').concat(WETH)
-        let poolToken = PoolToken.load(poolTokenId)
-        poolLiquidity = wethTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-        hasPrice = true
-      }
-    } else if (tokensList.includes(Address.fromString(DAI))) {
-      let daiTokenPrice = TokenPrice.load(DAI)
-      if (daiTokenPrice !== null) {
-        let poolTokenId = id.concat('-').concat(DAI)
-        let poolToken = PoolToken.load(poolTokenId)
-        poolLiquidity = daiTokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-        hasPrice = true
-      }
-    }
-  }
-  // Create or update token price
-  if (hasPrice) {
+
+    // Update pool liquidity
+
+    let liquidity = ZERO_BD
+    let denormWeight = ZERO_BD
+
     for (let i = 0; i < tokensList.length; i++) {
       let tokenPriceId = tokensList[i].toHexString()
       let tokenPrice = TokenPrice.load(tokenPriceId)
-      if (tokenPrice == null) {
-        tokenPrice = new TokenPrice(tokenPriceId)
-        tokenPrice.poolTokenId = ''
-        tokenPrice.poolLiquidity = ZERO_BD
-      }
-
-      let poolTokenId = id.concat('-').concat(tokenPriceId)
-      let poolToken = PoolToken.load(poolTokenId)
-
-      if (
-        pool.active && !pool.crp && pool.tokensCount.notEqual(BigInt.fromI32(0)) && pool.publicSwap &&
-        (tokenPrice.poolTokenId == poolTokenId || poolLiquidity.gt(tokenPrice.poolLiquidity)) &&
-        (
-          (tokenPriceId != WETH.toString() && tokenPriceId != DAI.toString() && tokenPriceId != CELO.toString() && tokenPriceId != CEUR.toString()) ||
-          (pool.tokensCount.equals(BigInt.fromI32(2)) && hasUsdPrice)
-        )
-      ) {
-        tokenPrice.price = ZERO_BD
-
-        if (poolToken.balance.gt(ZERO_BD)) {
-          tokenPrice.price = poolLiquidity.div(pool.totalWeight).times(poolToken.denormWeight).div(poolToken.balance)
+      if (tokenPrice !== null) {
+        let poolTokenId = id.concat('-').concat(tokenPriceId)
+        let poolToken = PoolToken.load(poolTokenId)
+        if (poolToken != null)
+        {
+          if (tokenPrice.price.gt(ZERO_BD) && poolToken.denormWeight.gt(denormWeight)) {
+            denormWeight = poolToken.denormWeight
+            liquidity = tokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
+          }
         }
-
-        tokenPrice.symbol = poolToken.symbol
-        tokenPrice.name = poolToken.name
-        tokenPrice.decimals = poolToken.decimals
-        tokenPrice.poolLiquidity = poolLiquidity
-        tokenPrice.poolTokenId = poolTokenId
-        tokenPrice.save()
       }
     }
-  }
 
-  // Update pool liquidity
-
-  let liquidity = ZERO_BD
-  let denormWeight = ZERO_BD
-
-  for (let i = 0; i < tokensList.length; i++) {
-    let tokenPriceId = tokensList[i].toHexString()
-    let tokenPrice = TokenPrice.load(tokenPriceId)
-    if (tokenPrice !== null) {
-      let poolTokenId = id.concat('-').concat(tokenPriceId)
-      let poolToken = PoolToken.load(poolTokenId)
-      if (tokenPrice.price.gt(ZERO_BD) && poolToken.denormWeight.gt(denormWeight)) {
-        denormWeight = poolToken.denormWeight
-        liquidity = tokenPrice.price.times(poolToken.balance).div(poolToken.denormWeight).times(pool.totalWeight)
-      }
+    let factory = Symmetric.load('1')
+    if (factory != null)
+    {
+      factory.totalLiquidity = factory.totalLiquidity.minus(pool.liquidity).plus(liquidity)
+      factory.save()
     }
+    pool.liquidity = liquidity
+    pool.save()
   }
-
-  let factory = Balancer.load('1')
-  factory.totalLiquidity = factory.totalLiquidity.minus(pool.liquidity).plus(liquidity)
-  factory.save()
-
-  pool.liquidity = liquidity
-  pool.save()
 }
 
 export function decrPoolCount(active: boolean, finalized: boolean, crp: boolean): void {
   if (active) {
-    let factory = Balancer.load('1')
-    factory.poolCount = factory.poolCount - 1
-    if (finalized) factory.finalizedPoolCount = factory.finalizedPoolCount - 1
-    if (crp) factory.crpCount = factory.crpCount - 1
-    factory.save()
+    let factory = Symmetric.load('1')
+    if (factory != null)
+    {
+      factory.poolCount = factory.poolCount - 1
+      if (finalized) factory.finalizedPoolCount = factory.finalizedPoolCount - 1
+      if (crp) factory.crpCount = factory.crpCount - 1
+      factory.save()
+    }
   }
 }
 
@@ -387,7 +425,7 @@ export function saveTransaction(event: ethereum.Event, eventName: string): void 
   transaction.event = eventName
   transaction.poolAddress = event.address.toHex()
   transaction.userAddress = userAddress
-  transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
+ // transaction.gasUsed = event.transaction.gasUsed.toBigDecimal()
   transaction.gasPrice = event.transaction.gasPrice.toBigDecimal()
   transaction.tx = event.transaction.hash
   transaction.timestamp = event.block.timestamp.toI32()

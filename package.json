@@ -13,13 +13,13 @@
     "deploy:ropsten": "graph deploy balancer-labs/balancer-ropsten subgraph.ropsten.yaml --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy:sokol": "graph deploy --access-token [add token] --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ centfinance/cent-swap-sokol subgraph.sokol.yaml",
     "deploy:xdai": "graph deploy --access-token [add token] --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ centfinance/cent-swap-xdai subgraph.xdai.yaml",
-    "deploy:celo": "graph deploy --access-token [add token] --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ centfinance/cent-swap-celo subgraph.celo.yaml",
+    "deploy:celo": "graph deploy --access-token [add token] --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ symmetric.celo subgraph.celo.yaml",
     "deploy:alfajores": "graph deploy --access-token [add token] --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ centfinance/cent-swap-alfajores subgraph.alfajores.yaml",
     "deploy:local": "graph deploy balancer-labs/balancer-subgraph subgraph.yaml --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.18.0",
-    "@graphprotocol/graph-ts": "^0.18.1"
+    "@graphprotocol/graph-cli": "0.22.3",
+    "@graphprotocol/graph-ts": "0.22.1"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
