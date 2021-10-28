@@ -8,7 +8,7 @@ dataSources:
     name: Factory
     network: celo-alfajores
     source:
-      address: "0x07Fa70d4560663E64b44a217AD40a926Dc5BdA5c"
+      address: "0x0366ac6cA3abE9C65b2A00ae2A9c2f41BFCff846"
       abi: Factory
       startBlock: 1049549
     mapping:
