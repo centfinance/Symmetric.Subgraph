@@ -70,7 +70,7 @@ if (network == 'xdai') {
   USD = '0xddafbb505ad214d7b80b1f830fccc89b60fb7a83'
   WETH = '0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1'
   CRP_FACTORY = '0x28088c64341cbe7bf90b04786cdbfd1f650d34cc'
-  GNO = '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb'
+  GNO = '0x9c58bacc331c9aa871afd802db6379a98e80cedb'
 }
 
 if (network == 'celo') {
