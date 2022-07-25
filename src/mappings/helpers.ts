@@ -70,6 +70,7 @@ if (network == 'xdai') {
   USD = '0xddafbb505ad214d7b80b1f830fccc89b60fb7a83'
   WETH = '0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1'
   CRP_FACTORY = '0x28088c64341cbe7bf90b04786cdbfd1f650d34cc'
+  GNO = '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb'
 }
 
 if (network == 'celo') {
@@ -267,6 +268,19 @@ export function updatePoolLiquidity(id: string): void {
           hasPrice = true
         }
       }
+      else if (tokensList.includes(Address.fromString(GNO))) {
+        let gnoTokenPrice = TokenPrice.load(GNO)
+        if (gnoTokenPrice !== null) {
+          let gnoPoolTokenId = id.concat('-').concat(GNO)
+          let gnoPoolToken = PoolToken.load(poolTokenId)
+          if (gnoPoolToken != null)
+          {
+            poolLiquidity = gnoTokenPrice.price.times(gnoPoolToken.balance).div(gnoPoolToken.denormWeight).times(pool.totalWeight)
+          }
+          hasPrice = true
+        }
+      }
+      
     } else if (network == 'poa-sokol') {
       if (tokensList.includes(Address.fromString(WSPOA))) {
         let wspoaTokenPrice = TokenPrice.load(WSPOA)
