@@ -18,13 +18,13 @@
     "deploy:local": "graph deploy balancer-labs/balancer-subgraph subgraph.yaml --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "0.22.3",
-    "@graphprotocol/graph-ts": "0.22.1"
+    "@graphprotocol/graph-cli": "0.25.0",
+    "@graphprotocol/graph-ts": "0.25.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
-    "keytar": "^5.0.0",
+    "keytar": "^7.9.0",
     "truffle": "^5.1.0",
     "truffle-contract": "^4.0.5",
     "truffle-hdwallet-provider": "^1.0.4"

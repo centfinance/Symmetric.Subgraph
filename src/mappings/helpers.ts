@@ -33,6 +33,7 @@ let CUSD = '';
 let CEUR = '';
 let WSPOA = '';
 let BTC = '';
+let GNO = '';
 
 let CRP_FACTORY = '';
 
@@ -272,7 +273,7 @@ export function updatePoolLiquidity(id: string): void {
         let gnoTokenPrice = TokenPrice.load(GNO)
         if (gnoTokenPrice !== null) {
           let gnoPoolTokenId = id.concat('-').concat(GNO)
-          let gnoPoolToken = PoolToken.load(poolTokenId)
+          let gnoPoolToken = PoolToken.load(gnoPoolTokenId)
           if (gnoPoolToken != null)
           {
             poolLiquidity = gnoTokenPrice.price.times(gnoPoolToken.balance).div(gnoPoolToken.denormWeight).times(pool.totalWeight)

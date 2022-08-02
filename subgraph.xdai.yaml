@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Symmetric is a non-custodial portfolio manager, liquidity provider, and price sensor.
 repository: https://github.com/centfinance/Symmetric.Subgraph.git
 schema:
@@ -13,7 +13,7 @@ dataSources:
       startBlock: 13108160
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/factory.ts
       entities:
@@ -36,7 +36,7 @@ templates:
       abi: Pool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/pool.ts
       entities:
@@ -87,7 +87,7 @@ templates:
       abi: ConfigurableRightsPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/pool.ts
       entities:
